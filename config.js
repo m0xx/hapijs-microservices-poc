@@ -8,6 +8,17 @@ const criteria = {
 
 const config = {
     services: {
+        web: {
+            $filter: 'env',
+            production: {
+                'host': process.env.WEB_HOST,
+                'port': process.env.WEB_PORT
+            },
+            $default: {
+                'host': 'localhost',
+                'port': 80
+            }
+        },
         auth: {
             $filter: 'env',
             production: {
