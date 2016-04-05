@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script   src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+    <script   src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link  rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6">
+                <h2 class="page-header">Generate JWT</h2>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="username" placeholder="Username" value="max">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="password" placeholder="Password" value="123">
+                    </div>
+                    <button class="btn btn-primary btn-generate-jwt btn-block">Generate JWT!</button>
+                    <br/>
+                    <pre id="token-container">No token yet.</pre>
+            </div>
+            <div class="col-xs-6">
+                <h2 class="page-header">List clubs with a JWT</h2>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="jwt" placeholder="JSON Web Token" />
+                </div>
+                <button class="btn btn-info btn-list-clubs btn-block">List clubs!</button>
+                <br/>
+                <pre id="clubs-container">No club fetched yet.</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function() {
+            $('.btn-generate-jwt').click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: "/generate-token",
+                    data: {
+                        username: $("#username").val(),
+                        password: $("#password").val()
+                    },
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    $("#token-container").html(data.token);
+                })
+                .fail(function() {
+                    $("#token-container").html("Invalid credentials.");
+                })
+            })
+
+            $('.btn-list-clubs').click(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: "/clubs",
+                    headers: {authorization: $("#jwt").val()},
+                    dataType: 'json'
+                })
+                .done(function(clubs) {
+                    $("#clubs-container").html(JSON.stringify(clubs));
+                })
+                .fail(function() {
+                    $("#clubs-container").html("Invalid token.");
+                })
+            })
+        })
+    </script>
+</body>
+</html>
